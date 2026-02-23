@@ -1,0 +1,24 @@
+# Terraform working dir
+**/.terraform/*
+
+# Terraform state (NEVER commit)
+*.tfstate
+*.tfstate.*
+terraform.tfstate.d/
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Variable files (can contain secrets)
+*.tfvars
+*.tfvars.json
+
+# CLI config
+.terraformrc
+terraform.rc
+
+# OS / keys
+.DS_Store
+*.pem
+*.key
