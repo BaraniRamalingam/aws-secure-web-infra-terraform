@@ -4,12 +4,28 @@ resource "aws_security_group" "web" {
   description = "Allow HTTP inbound"
   vpc_id      = var.vpc_id
 
-  ingress {
-    description = "HTTP from allowed CIDR"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = [var.allowed_http_cidr]
+  # Allow HTTP from CIDR
+  dynamic "ingress" {
+    for_each = var.allowed_http_cidr != null ? [1] : []
+    content {
+      description = "HTTP from allowed CIDR"
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      cidr_blocks = [var.allowed_http_cidr]
+    }
+  }
+
+  # Allow HTTP from ALB security group
+  dynamic "ingress" {
+    for_each = var.alb_sg_id != null ? [1] : []
+    content {
+      description     = "HTTP from ALB"
+      from_port       = 80
+      to_port         = 80
+      protocol        = "tcp"
+      security_groups = [var.alb_sg_id]
+    }
   }
 
   egress {
@@ -80,13 +96,13 @@ resource "aws_instance" "web" {
   associate_public_ip_address = true
   iam_instance_profile        = aws_iam_instance_profile.ssm_profile.name
   user_data_replace_on_change = true
-  user_data = <<-EOF
+  user_data                   = <<-EOF
               #!/bin/bash
               set -e
 
               dnf update -y
 
-              # Ensure SSM Agent is installed + running (for Session Manager)
+              # Ensure SSM Agent is installed + running (Session Manager)
               dnf install -y amazon-ssm-agent
               systemctl enable amazon-ssm-agent
               systemctl start amazon-ssm-agent
@@ -97,16 +113,7 @@ resource "aws_instance" "web" {
               systemctl start nginx
 
               echo "<h1>${var.name_prefix} - Nginx is running!</h1>" > /usr/share/nginx/html/index.html
-              EOF  user_data = <<-EOF
-              #!/bin/bash
-              set -e
-              dnf update -y
-              dnf install -y nginx
-              systemctl enable nginx
-              systemctl start nginx
-              echo "<h1>${var.name_prefix} - Nginx is running!</h1>" > /usr/share/nginx/html/index.html
               EOF
-
   tags = {
     Name = "${var.name_prefix}-web-ec2"
   }

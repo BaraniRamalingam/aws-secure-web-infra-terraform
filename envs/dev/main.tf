@@ -20,5 +20,17 @@ module "ec2_web" {
   subnet_id = module.vpc.public_subnet_ids[0]
 
   instance_type     = "t2.micro"
-  allowed_http_cidr = "0.0.0.0/0"
+  allowed_http_cidr = null
+  alb_sg_id         = module.alb.alb_sg_id
+}
+
+module "alb" {
+  source = "../../modules/alb"
+
+  name_prefix = var.name_prefix
+  vpc_id      = module.vpc.vpc_id
+
+  public_subnet_ids  = module.vpc.public_subnet_ids
+  allowed_http_cidr  = "0.0.0.0/0"
+  target_instance_id = module.ec2_web.instance_id
 }

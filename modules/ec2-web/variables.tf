@@ -24,3 +24,9 @@ variable "allowed_http_cidr" {
   type        = string
   default     = "0.0.0.0/0"
 }
+
+variable "alb_sg_id" {
+  description = "Optional ALB security group ID allowed to access the instance on HTTP"
+  type        = string
+  default     = null
+}

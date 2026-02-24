@@ -29,3 +29,18 @@ output "web_public_ip" {
 output "web_public_url" {
   value = module.ec2_web.public_url
 }
+
+output "alb_dns_name" {
+  description = "ALB DNS name"
+  value       = module.alb.alb_dns_name
+}
+
+output "alb_url" {
+  description = "ALB URL"
+  value       = "http://${module.alb.alb_dns_name}"
+}
+
+output "target_group_arn" {
+  description = "Target group ARN for the ALB"
+  value       = module.alb.target_group_arn
+}
