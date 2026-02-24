@@ -17,3 +17,15 @@ output "public_route_table_id" {
   description = "Public route table ID"
   value       = module.vpc.public_route_table_id
 }
+
+output "web_instance_id" {
+  value = module.ec2_web.instance_id
+}
+
+output "web_public_ip" {
+  value = module.ec2_web.public_ip
+}
+
+output "web_public_url" {
+  value = module.ec2_web.public_url
+}
