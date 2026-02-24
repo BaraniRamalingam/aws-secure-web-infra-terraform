@@ -1,7 +1,7 @@
 # Terraform working dir
 **/.terraform/*
 
-# Terraform state (NEVER commit)
+# Terraform state
 *.tfstate
 *.tfstate.*
 terraform.tfstate.d/
@@ -10,7 +10,7 @@ terraform.tfstate.d/
 crash.log
 crash.*.log
 
-# Variable files (can contain secrets)
+# Variable files
 *.tfvars
 *.tfvars.json
 
