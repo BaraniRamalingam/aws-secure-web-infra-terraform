@@ -18,18 +18,6 @@ output "public_route_table_id" {
   value       = module.vpc.public_route_table_id
 }
 
-output "web_instance_id" {
-  value = module.ec2_web.instance_id
-}
-
-output "web_public_ip" {
-  value = module.ec2_web.public_ip
-}
-
-output "web_public_url" {
-  value = module.ec2_web.public_url
-}
-
 output "alb_dns_name" {
   description = "ALB DNS name"
   value       = module.alb.alb_dns_name
@@ -43,4 +31,19 @@ output "alb_url" {
 output "target_group_arn" {
   description = "Target group ARN for the ALB"
   value       = module.alb.target_group_arn
+}
+
+output "asg_name" {
+  description = "Auto Scaling Group name"
+  value       = module.asg_web.asg_name
+}
+
+output "asg_web_sg_id" {
+  description = "Security group ID used by ASG instances"
+  value       = module.asg_web.web_sg_id
+}
+
+output "app_https_url" {
+  description = "HTTPS URL (Route53 -> ALB)"
+  value       = "https://terraformproject.baranistack.com"
 }

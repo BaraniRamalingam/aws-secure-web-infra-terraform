@@ -17,3 +17,8 @@ output "alb_sg_id" {
   description = "Security Group ID for the ALB"
   value       = aws_security_group.alb.id
 }
+
+output "alb_https_url" {
+  description = "HTTPS URL of the ALB"
+  value       = "https://${aws_lb.this.dns_name}"
+}

@@ -14,12 +14,18 @@ variable "public_subnet_ids" {
 }
 
 variable "allowed_http_cidr" {
-  description = "CIDR allowed to access the ALB over HTTP (80). Use your IP/32 for tighter security."
+  description = "CIDR allowed to access the ALB over HTTP (80)"
   type        = string
   default     = "0.0.0.0/0"
 }
 
 variable "target_instance_id" {
-  description = "EC2 instance ID to register in the ALB target group"
+  description = "EC2 instance ID to register in the ALB target group (optional if using ASG)"
+  type        = string
+  default     = null
+}
+
+variable "acm_certificate_arn" {
+  description = "ACM certificate ARN for the ALB HTTPS listener"
   type        = string
 }
