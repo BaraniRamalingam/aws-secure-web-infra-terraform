@@ -1,8 +1,10 @@
 # AWS Secure Web Infrastructure using Terraform
 
-This project provisions a secure, production-style web application infrastructure on AWS using Terraform.
+This project provisions a secure and scalable web infrastructure on AWS using Terraform.
 
-All infrastructure is provisioned using modular Terraform code to ensure repeatability, maintainability, and environment consistency. The implementation follows a layered architecture approach to isolate the public access layer from the compute layer.
+It includes VPC, Application Load Balancer, Auto Scaling Group running Nginx, and HTTPS using ACM. The application is accessible through a custom Route53 subdomain and instances are not directly exposed to the internet.
+
+The goal was to implement a production-aligned web tier with proper separation between public and application layers.
 
 ---
 
@@ -15,19 +17,23 @@ The infrastructure consists of:
 - Internet Gateway and routing
 - Application Load Balancer (ALB)
 - Target Group with health checks
-- EC2 instance running Nginx
+- Auto Scaling Group (Launch Template with Nginx on Amazon Linux 2023)
 - IAM role for secure Systems Manager (SSM) access
+- HTTPS listener (443) with ACM certificate
+- HTTP to HTTPS redirect (port 80 → 443)
+- Route53 Alias record for custom subdomain
 
 ### Traffic Flow
 
-Client (Internet)  
+Client (Internet)
 
-→ Application Load Balancer (public)  
+→ Route53 (terraformproject.baranistack.com)  
+→ Application Load Balancer (HTTPS 443)  
 → Target Group  
-→ EC2 instance  
+→ Auto Scaling Group instance  
 → Nginx web server 
 
-The EC2 instance is not publicly exposed. All inbound traffic is routed through the ALB.
+Application instances are not publicly accessible. Only the ALB is internet-facing.
 
 ---
 
@@ -35,12 +41,12 @@ The EC2 instance is not publicly exposed. All inbound traffic is routed through 
 
 Security was implemented with layered controls:
 
-- EC2 security group allows inbound traffic only from the ALB security group
-- No direct public HTTP access to EC2
+- ALB security group allows inbound HTTP (80) and HTTPS (443)
+- HTTP requests are redirected to HTTPS
+- TLS certificate managed in ACM and attached to ALB HTTPS listener
+- ASG instance security group allows port 80 only from ALB security group
 - No SSH access (port 22 not exposed)
-- Administrative access via AWS Systems Manager (Session Manager)
-- Security group-based service-to-service access control enforced between ALB and EC2.
-- Health checks configured at the load balancer level
+- Administration via AWS Systems Manager (Session Manager)
 
 This design enforces separation between the public entry point and the compute layer.
 
@@ -49,7 +55,7 @@ This design enforces separation between the public entry point and the compute l
 ## Infrastructure Design Principles
 
 - Modular Terraform architecture
-- Reusable VPC, EC2, and ALB modules
+- Reusable VPC, ASG, and ALB modules
 - Environment-based structure (envs/dev)
 - Infrastructure lifecycle managed via Terraform
 - Designed with cost-efficiency considerations while maintaining production-aligned architecture.
@@ -62,7 +68,7 @@ aws-secure-web-infra-terraform/
 |
 |-- modules/
 |     |--- vpc/
-|     |--- ec2-web/
+|     |--- asg-web/
 |     |--- alb/
 |
 |-- envs/
@@ -87,10 +93,11 @@ terraform plan
 terraform apply
 ```
 
-After deployment, retrieve the application endpoint:
+After deployment, retrieve the application endpoints:
 
 ```
 terraform output alb_url
+terraform output alb_https_url
 ```
 ---
 
@@ -106,12 +113,12 @@ terraform destroy
 
 ## Key Implementation Highlights
 
-- ALB-based web tier architecture
-- Secure EC2 access via security group referencing
-- SSM-based administration (no SSH keys required)
-- Automated Nginx provisioning via user_data
-- Health-checked target group attachment
-- Infrastructure reproducibility through code
+- ALB + ASG based web architecture
+- Launch Template bootstraps Nginx using user_data
+- HTTPS enabled using ACM
+- HTTP to HTTPS redirect configured at ALB level
+- Custom domain mapped using Route53
+- SSM used for secure instance access (no SSH)
 
 ---
 
@@ -119,9 +126,9 @@ terraform destroy
 
 Screenshots in `/docs/screenshots` demonstrate:
 
-- ALB configuration
-- Healthy target group status
-- Restricted EC2 security group
-- Successful Nginx response
-- Terraform output verification
+- ACM certificate issued
+- ALB listeners configured (80 redirect, 443 HTTPS)
+- Target group shows healthy ASG instance
+- HTTPS access verified using custom domain
+- SSM Session Manager access validated
 
