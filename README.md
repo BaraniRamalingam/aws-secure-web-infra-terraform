@@ -132,3 +132,6 @@ Screenshots in `/docs/screenshots` demonstrate:
 - HTTPS access verified using custom domain
 - SSM Session Manager access validated
 
+## Architecture Diagram
+
+![Secure AWS Web Infrastructure](docs/diagrams/architecture.png)
