@@ -57,6 +57,7 @@ Security was implemented with layered controls:
 This design enforces separation between the public entry point and the compute layer.
 
 Note: In this implementation, ASG instances are placed in public subnets with restricted security group access (allowing traffic only from the ALB). In a production environment, these instances would typically reside in private subnets behind a NAT Gateway for stronger network isolation.
+
 ---
 
 ## Infrastructure Design Principles
