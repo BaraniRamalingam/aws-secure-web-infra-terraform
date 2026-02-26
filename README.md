@@ -134,4 +134,4 @@ Screenshots in `/docs/screenshots` demonstrate:
 
 ## Architecture Diagram
 
-![Secure AWS Web Infrastructure](docs/diagrams/architecture.png)
+![Secure AWS Web Infrastructure](docs/diagrams/Architecture.png)
