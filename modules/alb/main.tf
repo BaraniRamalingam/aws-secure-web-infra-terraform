@@ -1,7 +1,5 @@
 # --- 1) Security Group for ALB ---
-# This is the "front door" security group.
-# It allows inbound HTTP (80) from the allowed CIDR (internet or your IP).
-# It allows outbound to anywhere (so it can reach targets).
+
 resource "aws_security_group" "alb" {
   name        = "${var.name_prefix}-alb-sg"
   description = "Allow HTTP inbound to ALB"
@@ -37,7 +35,7 @@ resource "aws_security_group" "alb" {
 }
 
 # --- 2) Application Load Balancer ---
-# Must be in PUBLIC subnets to be reachable from internet.
+
 resource "aws_lb" "this" {
   name               = "${var.name_prefix}-alb"
   load_balancer_type = "application"
@@ -52,8 +50,7 @@ resource "aws_lb" "this" {
 }
 
 # --- 3) Target Group ---
-# A target group is the "destination set" where ALB will forward traffic.
-# We use HTTP on port 80, and ALB will health-check the targets.
+
 resource "aws_lb_target_group" "this" {
   name     = "${var.name_prefix}-tg"
   port     = 80

@@ -1,10 +1,9 @@
-# --- 1) Security Group: allow HTTP inbound, allow all outbound ---
+# --- 1) Security Group: ---
 resource "aws_security_group" "web" {
   name        = "${var.name_prefix}-web-sg"
   description = "Allow HTTP inbound"
   vpc_id      = var.vpc_id
 
-  # Allow HTTP from CIDR
   dynamic "ingress" {
     for_each = var.allowed_http_cidr != null ? [1] : []
     content {
@@ -16,7 +15,6 @@ resource "aws_security_group" "web" {
     }
   }
 
-  # Allow HTTP from ALB security group
   dynamic "ingress" {
     for_each = var.alb_sg_id != null ? [1] : []
     content {
@@ -60,7 +58,7 @@ resource "aws_iam_role" "ssm_role" {
   assume_role_policy = data.aws_iam_policy_document.ec2_assume_role.json
 }
 
-# Attach AWS-managed policy for SSM
+# Attached AWS-managed policy for SSM
 resource "aws_iam_role_policy_attachment" "ssm_core" {
   role       = aws_iam_role.ssm_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
@@ -71,7 +69,7 @@ resource "aws_iam_instance_profile" "ssm_profile" {
   role = aws_iam_role.ssm_role.name
 }
 
-# --- 3) Find latest Amazon Linux 2023 AMI (x86_64) ---
+# --- 3)latest Amazon Linux 2023 AMI (x86_64) ---
 data "aws_ami" "al2023" {
   most_recent = true
   owners      = ["amazon"]
